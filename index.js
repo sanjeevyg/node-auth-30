@@ -19,21 +19,52 @@ app.listen(port, () => {
 
 app.post('/users', (request, response) => {
     const user = request.body 
-    bcrypt.hash(request.body.password, 12, (error, hashedPassword))
-        .then(
-            database('users')
+    bcrypt.hash(request.body.password, 12, (error, hashedPassword) => {
+        database('users')
                 .insert({
-                    username: request.params.username,
+                    username: request.body.username,
                     password_hash: hashedPassword
                 })
-                .returing('*')
+                .returning('*')
                 .then(user => {
                     response.json({user})
+                }).catch(error => {
+                    console.error({error: error.message})
+                    response.sendStatus(500)
                 })
-        ).catch(error => {
-            console.error({error: error.message})
-            response.sendStatus(500)
+    })
+})
+
+app.post('/login', (request, response) => {
+    const user = request.body
+    database('users')
+        .where({username: user.username})
+        .first()
+        .then(retrieveduser => {
+            if (!retrieveduser) throw new Error('User not found!')
+
+            return Promise.all([
+                bcrypt.compare(user.password, retrieveduser.password_hash),
+                Promise.resolve(retrieveduser)
+            ])
+        }).then(results => {
+                const areSamePasswords = results[0]
+                const user = results[1]
+
+                if(!areSamePasswords) throw new Error('Wrong password!')
+
+                const payload = {username: user.username}
+                const secret = 'SECRET!'
+
+                jwt.sign(payload, secret, (error, token) => {
+                    if(error) throw new Error('Sign in error!')
+
+                    response.json({ token })
+                })
+            }).catch(eror => {
+                response.json({error: error.message})
         })
+        
 })
 
 
