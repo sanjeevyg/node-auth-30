@@ -92,5 +92,14 @@ function authenticate(request, response, next) {
 }
 
 
+app.get('/users', (request, response) => {
+    database('users')
+        .select()
+        .then(users => {
+            response.json({users})
+        })
+})
+
+
 
 
