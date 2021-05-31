@@ -19,7 +19,7 @@ app.listen(port, () => {
 
 app.post('/users', (request, response) => {
     const user = request.body 
-    bcrypt(request.body.password, 12, (error, hashedPassword))
+    bcrypt.hash(request.body.password, 12, (error, hashedPassword))
         .then(
             database('users')
                 .insert({
@@ -29,11 +29,11 @@ app.post('/users', (request, response) => {
                 .returing('*')
                 .then(user => {
                     response.json({user})
-                }).catch(error => {
-                    console.error({error: error.message})
-                    response.sendStatus(500)
                 })
-        )
+        ).catch(error => {
+            console.error({error: error.message})
+            response.sendStatus(500)
+        })
 })
 
 
