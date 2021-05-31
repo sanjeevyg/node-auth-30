@@ -102,6 +102,18 @@ app.get('/users', (request, response) => {
         })
 })
 
+app.delete('/users/:id', (request, response) => {
+    const id = request.params.id
+    database('users')
+        .where({id: id})
+        .delete()
+        .then(() => {
+            response.json({message:  `user account with ${id} is delete`})
+        }).then(error => {
+            response.json({ error: error.message })
+        })
+})
+
 
 
 
