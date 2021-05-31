@@ -97,8 +97,12 @@ app.get('/users', (request, response) => {
         .select()
         .then(users => {
             response.json({users})
+        }).catch(error => {
+            response.json({error: error.message})
         })
 })
+
+
 
 
 
