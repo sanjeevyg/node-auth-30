@@ -17,23 +17,45 @@ app.listen(port, () => {
     console.log(`listening to port ${port}`)
 })
 
+// app.post('/users', (request, response) => {
+//     const user = request.body 
+//     bcrypt.hash(request.body.password, 12, (error, hashedPassword) => {
+//         database('users')
+//                 .insert({
+//                     username: request.body.username,
+//                     password_hash: hashedPassword
+//                 })
+//                 .returning('*')
+//                 .then(user => {
+//                     response.json({user})
+//                 }).catch(error => {
+//                     console.error({error: error.message})
+//                     response.sendStatus(500)
+//                 })
+//     })
+// })
+
+
 app.post('/users', (request, response) => {
-    const user = request.body 
-    bcrypt.hash(request.body.password, 12, (error, hashedPassword) => {
+    const user = request.body
+
+    bcrypt.hash(request.body.password, 12, (error, hashedPassword ) => {
         database('users')
-                .insert({
-                    username: request.body.username,
-                    password_hash: hashedPassword
-                })
-                .returning('*')
-                .then(user => {
-                    response.json({user})
-                }).catch(error => {
-                    console.error({error: error.message})
-                    response.sendStatus(500)
-                })
+            .insert({
+                username: request.body.username,
+                password_hash: hashedPassword
+            })
+            .returning('*')
+            .then(user => {
+                response.json({user})
+            }).catch(error => {
+                console.error({error: error.message})
+                response.sendStatus(500)
+            })
     })
 })
+
+
 
 app.post('/login', (request, response) => {
     const user = request.body
@@ -64,7 +86,6 @@ app.post('/login', (request, response) => {
             }).catch(error => {
                 response.json({error: error.message})
         })
-
 })
 
 app.get('/authenticate', authenticate, (request, response) => {
