@@ -114,6 +114,17 @@ app.delete('/users/:id', (request, response) => {
         })
 })
 
+app.patch('/users', (request, response) => {
+    const user = request.body
+    database('users')
+        .where({id: request.params.id})
+        .update(user)
+        .returning('*')
+        .then(user => {
+            response.json({user})
+        })
+})
+
 
 
 
